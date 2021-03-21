@@ -7,13 +7,14 @@ import Form from 'react-bootstrap/Form'
 import FormControl from 'react-bootstrap/FormControl'
 import InputGroup from 'react-bootstrap/InputGroup'
 import Badge from 'react-bootstrap/Badge'
+import {transformWord} from "../../Utils/translate";
 
 interface word {
-    id: number;
-    original: string;
-    meaning: string;
-    knowledge: 1 | 2 | 3;
-    type: string;
+    id?: number
+    original: string
+    meaning: string
+    knowledge: 1 | 2 | 3
+    type?: string
     tags: string[]
 }
 
@@ -93,22 +94,38 @@ const wordCard = (word: word): JSX.Element => {
 
 const NewWordModal = (props: ModalProps) => {
     const types = ['Verb', 'Adjective', 'Noun', 'Other']
-    const emptyArray: string[] = []
-    const [tags, setTags] = useState(emptyArray)
-    const tagInput = React.useRef<HTMLInputElement>(null);
+    const emptyWord: word = {knowledge: 2, meaning: "", original: "", tags: [], type: "Other"}
+    const [newWord, setNewWord] = useState(emptyWord)
+    const tagInput = React.useRef<HTMLInputElement>(null)
+
     const addTag = () => {
         if(tagInput.current) {
             const value: string = tagInput.current.value
-            setTags([...tags, value])
+            // @ts-ignore
+            let tagsList = newWord['tags'] ? newWord['tags'] : []
+            tagsList.push(value)
             tagInput.current.value = ""
+            setNewWord({...newWord, tags: [...tagsList]})
         }
     }
+
     const deleteTag = (deleteTag: string) => {
-        setTags(tags.filter(tag => tag !== deleteTag))
+        let tags: string[] = []
+        // @ts-ignore
+        if(newWord['tags']) tags = newWord['tags']
+        tags = tags.filter(tag => tag !== deleteTag)
+        setNewWord({...newWord, tags: tags})
     }
-    const onChangeControl = ({currentTarget: input}: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(input.value)
+
+    const onChangeInput = ({currentTarget: input}: React.ChangeEvent<HTMLInputElement>) => {
+        if(input.name === "original") {
+            input.value = transformWord(input.value)
+        }
+        setNewWord({...newWord, [input.name]: input.value })
+        //Add validation
     }
+
+    const {knowledge, meaning, original, tags, type} = newWord
 
     return (
         <Modal
@@ -124,24 +141,39 @@ const NewWordModal = (props: ModalProps) => {
             </Modal.Header>
             <Modal.Body>
                 <Form>
-                    <Form.Group controlId="formGroupEmail">
-                        <Form.Label>Original Word</Form.Label>
-                        <input className="form-control" type="text" placeholder="The word on it's original language" onChange={onChangeControl}/>
+                    <Form.Group controlId="formGroupOriginalWord">
+                        <Form.Label>Original word</Form.Label>
+                        <InputGroup size="lg">
+                            <FormControl
+                                placeholder="Write the word on it's original language"
+                                aria-label="Write the word on it's original language"
+                                aria-describedby="original-word-input"
+                                autoComplete="off"
+                                name="original"
+                                value={original}
+                                onChange={onChangeInput}
+                            />
+                            <InputGroup.Append>
+                                <Form.Control as="select" className="pr-2" size="lg" defaultValue="hiragana">
+                                    <option value="hiragana">Hiragana</option>
+                                </Form.Control>
+                            </InputGroup.Append>
+                        </InputGroup>
                     </Form.Group>
-                    <Form.Group controlId="formGroupPassword">
+                    <Form.Group controlId="formGroupMeaning">
                         <Form.Label>Meaning</Form.Label>
-                        <Form.Control type="text" placeholder="The meaning of the word in your language" />
+                        <Form.Control type="text" autoComplete="off" placeholder="The meaning of the word in your language" name="meaning" value={meaning} onChange={onChangeInput} />
                     </Form.Group>
-                    <Form.Group controlId="formGroupPassword">
+                    <Form.Group controlId="formGroupKnowledge">
                         <Form.Label>Knowledge</Form.Label>
-                        <Form.Control type="range" min="1" max="3"/>
+                        <Form.Control type="range" min="1" max="3" onChange={onChangeInput} value={knowledge} name="knowledge"/>
                         <Form.Text className="text-muted">
                             Do you know the word?. Pick a range, from "I never remember the word" to "I always remember what it means"
                         </Form.Text>
                     </Form.Group>
-                    <Form.Group controlId="formGroupPassword">
+                    <Form.Group controlId="formGroupType">
                         <Form.Label>Type</Form.Label>
-                        <Form.Control as="select">
+                        <Form.Control as="select" name="type" onChange={onChangeInput} value={type}>
                             {types.map(type => <option key={type} value={type}>{type}</option>)}
                         </Form.Control>
                     </Form.Group>
@@ -172,7 +204,7 @@ const NewWordModal = (props: ModalProps) => {
             </Modal.Body>
             <Modal.Footer>
                 <button className="btn btn-default" onClick={props.onHide}>Cancel</button>
-                <button className="btn btn-success">Save</button>
+                <button className="btn btn-success" onClick={() => {console.log("New word: ",newWord)}}>Save</button>
             </Modal.Footer>
         </Modal>
     );

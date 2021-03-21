@@ -1,25 +1,13 @@
-import jap from "./japanese";
+import hiragana from "./dictionarys/japanese-hiragana.json";
 
 export function transformWord(word: string) {
-    const keys = Object.keys(jap);
+    const keys = Object.keys(hiragana);
     const similar = keys.filter((key) => word.includes(key));
     if (similar.length >= 1) {
         similar.sort((a, b) => b.length - a.length);
         let key = similar[0];
-        //word = word.replace(key, jap[key]);
+        // @ts-ignore
+        word = word.replace(key, hiragana[key]);
     }
     return word;
-}
-
-export function translateWord(word: string): string {
-    const keys: string[] = Object.keys(jap)
-    const similar = keys.filter((key) => word.includes(key))
-    if(similar.length >= 1){
-        similar.sort((a, b) => b.length - a.length);
-        let key = similar[0]
-        word = word.replace(key, jap[key])
-    }
-
-    console.log(similar)
-    return "Hello"
 }
