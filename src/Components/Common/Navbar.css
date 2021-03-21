@@ -1,0 +1,17 @@
+.navbar-brand {
+    width: 100px;
+}
+
+img#logo {
+    position: absolute;
+    width: 100px;
+    top: 0;
+ }
+
+.navbar-green{
+    background-color: #297373 !important;
+}
+
+.nav-link{
+    color: whitesmoke !important;
+}
