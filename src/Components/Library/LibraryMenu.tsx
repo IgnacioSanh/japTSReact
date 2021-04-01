@@ -1,46 +1,62 @@
 import React,{FunctionComponent, useState} from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTrashAlt, faEdit, faPlus, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
-import {ModalProps} from "react-bootstrap"
 import Modal from 'react-bootstrap/Modal'
 import Form from 'react-bootstrap/Form'
 import FormControl from 'react-bootstrap/FormControl'
 import InputGroup from 'react-bootstrap/InputGroup'
 import Badge from 'react-bootstrap/Badge'
 import {transformWord} from "../../Utils/translate";
-
-interface word {
-    id?: number
-    original: string
-    meaning: string
-    knowledge: 1 | 2 | 3
-    type?: string
-    tags: string[]
-}
+import baseObjects from '../../Utils/baseObjects';
 
 const LibraryMenu: FunctionComponent = () => {
-    const mockWords: word[] = [{
-        id: 1,
-        original: 'ありがおつ',
-        meaning: 'Thank you',
-        knowledge: 3,
-        type: 'Other',
-        tags: ['greeting']
-    }]
+    const {mockWords, searchFilterBase, baseWord} = baseObjects
+
     const [words, setWords] = useState(mockWords)
     const [showNewWordModal, setShowNewWordModal] = useState(false)
+    const [searchFilter, setSearchFilter] = useState(searchFilterBase)
+    const [selectedWordCard, setSelectedWordCard] = useState(baseWord)
+
+    const saveNewWord : (word: Word) => void = function (word: Word): void {
+        //TODO: Validate word
+        //TODO: Pass it to the backend
+        setWords([word, ...words])
+    }
+
+    const deleteWord = (id: number) => {
+        //TODO: Call the API to delete
+        setWords(words.filter(word => word.id !== id))
+    }
+
+    const filterWords = () => {
+        const searchTextLowered = searchFilter.searchText.toLowerCase()
+        const filteredWordsArray = words.filter((currentWord) => {
+            return currentWord.meaning.toLowerCase().includes(searchTextLowered)
+        })
+        return filteredWordsArray
+    }
+
+    const onChangeFilter = ({currentTarget: input}: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchFilter({searchText: input.value, page: 1})
+    }
+
+    let filteredWordsVar: Word[] = filterWords()
 
     return(
         <div className="row">
-            <NewWordModal show={showNewWordModal} onHide={() => setShowNewWordModal(false)}/>
+            <NewWordModal show={showNewWordModal} onHide={() => setShowNewWordModal(false)} saveWord={saveNewWord} />
             <div className="col-8">
             <h4>You have {words.length} words saved!</h4>
             <div className="input-group mb-3">
                 <div className="input-group-prepend">
                     <button className="btn btn-sizzling" type="button" onClick={() => setShowNewWordModal(true)}>Add a new word <FontAwesomeIcon icon={faPlus} /></button>
                 </div>
-                <input type="text" className="form-control" placeholder="... or search for a word here"/>
+                <input type="text" className="form-control" placeholder="... or search for a word here" onChange={onChangeFilter}/>
             </div>
+            { 
+                (searchFilter.searchText !== '') && 
+                <small>There are {filteredWordsVar.length} words that match the filter. Page {searchFilter.page} of {Math.floor(filteredWordsVar.length/10)+1}</small>
+                }
             <table className="table table-hover table-sm">
                 <thead>
                     <tr>
@@ -50,12 +66,14 @@ const LibraryMenu: FunctionComponent = () => {
                     </tr>
                 </thead>
                 <tbody>
-                {words.map(({original, meaning, id}) => {return (
-                        <tr key={id}>
+                {filteredWordsVar.map((word) => {
+                    const {original, meaning, id} = word
+                    return (
+                        <tr key={id} onClick={() => setSelectedWordCard(word)}>
                             <td>{original}</td>
                             <td>{meaning}</td>
                             <td>
-                                <button className="btn btn-danger btn-sm"><FontAwesomeIcon icon={faTrashAlt} /></button>
+                                <button className="btn btn-danger btn-sm"><FontAwesomeIcon icon={faTrashAlt} onClick={() => deleteWord(id)} /></button>
                                 <button className="btn btn-info btn-sm"><FontAwesomeIcon icon={faEdit} /></button>
                             </td>
                         </tr>
@@ -65,13 +83,13 @@ const LibraryMenu: FunctionComponent = () => {
             </table>
             </div>
             <div className="col-4">
-                {wordCard(words[0])}
+                {wordCard(selectedWordCard)}
             </div>
         </div>
     )
 }
 
-const wordCard = (word: word): JSX.Element => {
+const wordCard = (word: Word): JSX.Element => {
     const {original, meaning, knowledge, type, tags} = word
     return (
         <div className="card text-center">
@@ -92,9 +110,9 @@ const wordCard = (word: word): JSX.Element => {
     )
 }
 
-const NewWordModal = (props: ModalProps) => {
+function NewWordModal (props: NewWordModalProps) {
     const types = ['Verb', 'Adjective', 'Noun', 'Other']
-    const emptyWord: word = {knowledge: 2, meaning: "", original: "", tags: [], type: "Other"}
+    const emptyWord: Word = {id: 0, knowledge: 2, meaning: "", original: "", tags: [], type: "Other"}
     const [newWord, setNewWord] = useState(emptyWord)
     const tagInput = React.useRef<HTMLInputElement>(null)
 
@@ -125,11 +143,25 @@ const NewWordModal = (props: ModalProps) => {
         //Add validation
     }
 
+    const onCancel = () => {
+        setNewWord(emptyWord)
+        props.onHide()
+    }
+
+    const saveNewWord = () => {
+        //Add id to the new word
+        const generatedId: number = Math.floor(((Math.random() * 10000) + 100))
+        const wordWithid: Word = {...newWord, id: generatedId}
+        props.saveWord(wordWithid)
+        onCancel()
+    }
+
     const {knowledge, meaning, original, tags, type} = newWord
 
     return (
         <Modal
-            {...props}
+            show={props.show}
+            onHide={onCancel}
             size="lg"
             aria-labelledby="contained-modal-title-vcenter"
             centered
@@ -203,8 +235,8 @@ const NewWordModal = (props: ModalProps) => {
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <button className="btn btn-default" onClick={props.onHide}>Cancel</button>
-                <button className="btn btn-success" onClick={() => {console.log("New word: ",newWord)}}>Save</button>
+                <button className="btn btn-default" onClick={onCancel}>Cancel</button>
+                <button className="btn btn-success" onClick={saveNewWord} >Save</button>
             </Modal.Footer>
         </Modal>
     );

@@ -1,43 +1,31 @@
-import React, {FunctionComponent} from 'react';
+import React, {FunctionComponent} from 'react'
+import './Navbar.css'
+import {Link} from 'react-router-dom'
+import Navbar from 'react-bootstrap/NavBar'
+import Nav from 'react-bootstrap/Nav'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faSignInAlt, faBook, faGraduationCap } from '@fortawesome/free-solid-svg-icons'
-import {Link} from 'react-router-dom';
-import './Navbar.css';
+import { faSignInAlt } from '@fortawesome/free-solid-svg-icons'
 
-const Navbar : FunctionComponent = () => {
+const NavigationBar: FunctionComponent = () => {
     return (
-        <nav className="navbar navbar-expand-lg navbar-green bg-light">
+        <Navbar collapseOnSelect expand="lg" className="navbar-green" variant="dark">
             <Link className="navbar-brand" to="/">
                 <img id="logo" src="/black-shiba.png" alt="black shiba"/>
             </Link>
-            <button className="navbar-toggler" type="button" data-toggle="collapse"
-                    data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                    aria-label="Toggle navigation">
-                <span className="navbar-toggler-icon"/>
-            </button>
-
-            <div className="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul className="navbar-nav mr-auto">
-                    <li className="nav-item active">
-                        <Link className="nav-link" to="/">Home <span className="sr-only">(current)</span></Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link className="nav-link" to="/practice"> <FontAwesomeIcon icon={faGraduationCap} /> Practice</Link>
-                    </li>
-                    <li className="nav-item">
-                        <Link className="nav-link" to="/library"><FontAwesomeIcon icon={faBook} /> Library </Link>
-                    </li>
-                </ul>
-                <ul className="navbar-nav d-flex flex-row-reverse">
-                    <li className="nav-item">
-                        <Link className="nav-link btn btn-sizzling" to="#">
-                            <FontAwesomeIcon icon={faSignInAlt} />{' '} Login
-                        </Link>
-                    </li>
-                </ul>
-            </div>
-        </nav>
+            <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+            <Navbar.Collapse id="responsive-navbar-nav">
+                <Nav className="mr-auto">
+                    <Link className="nav-link" to="/practice">Practice</Link>
+                    <Link className="nav-link" to="/library">Library</Link>
+                </Nav>
+                <Nav>
+                    <Link className="nav-link btn btn-sizzling" to="#">
+                        <FontAwesomeIcon icon={faSignInAlt} />{' '} Login
+                    </Link>
+                </Nav>
+            </Navbar.Collapse>
+        </Navbar>
     )
-};
+}
 
-export default Navbar;
+export default NavigationBar
