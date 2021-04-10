@@ -1,10 +1,11 @@
 import React,{FunctionComponent, useState} from "react"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTrashAlt, faEdit, faPlus, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { faTrashAlt, faEdit, faPlus, faTimesCircle, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons'
 import Modal from 'react-bootstrap/Modal'
 import Form from 'react-bootstrap/Form'
 import FormControl from 'react-bootstrap/FormControl'
 import InputGroup from 'react-bootstrap/InputGroup'
+import Button from 'react-bootstrap/Button'
 import Badge from 'react-bootstrap/Badge'
 import {transformWord} from "../../Utils/translate";
 import baseObjects from '../../Utils/baseObjects';
@@ -14,6 +15,7 @@ const LibraryMenu: FunctionComponent = () => {
 
     const [words, setWords] = useState(mockWords)
     const [showNewWordModal, setShowNewWordModal] = useState(false)
+    const [showDeleteWorModal, setShowDeleteWordModal] = useState(false)
     const [searchFilter, setSearchFilter] = useState(searchFilterBase)
     const [selectedWordCard, setSelectedWordCard] = useState(baseWord)
 
@@ -26,6 +28,7 @@ const LibraryMenu: FunctionComponent = () => {
     const deleteWord = (id: number) => {
         //TODO: Call the API to delete
         setWords(words.filter(word => word.id !== id))
+        setShowDeleteWordModal(false)
     }
 
     const filterWords = () => {
@@ -36,6 +39,11 @@ const LibraryMenu: FunctionComponent = () => {
         return filteredWordsArray
     }
 
+    const confirmDeleteWordModal = (word: Word) => {
+        setSelectedWordCard(word)
+        setShowDeleteWordModal(true)
+    }
+
     const onChangeFilter = ({currentTarget: input}: React.ChangeEvent<HTMLInputElement>) => {
         setSearchFilter({searchText: input.value, page: 1})
     }
@@ -44,7 +52,8 @@ const LibraryMenu: FunctionComponent = () => {
 
     return(
         <div className="row">
-            <NewWordModal show={showNewWordModal} onHide={() => setShowNewWordModal(false)} saveWord={saveNewWord} />
+            <NewWordModal show={showNewWordModal} onHide={() => setShowNewWordModal(false)} onSubmit={saveNewWord} />
+            <ConfirmDeleteWordModal show={showDeleteWorModal} onHide={setShowDeleteWordModal} onSubmit={deleteWord} word={selectedWordCard}/>
             <div className="col-8">
             <h4>You have {words.length} words saved!</h4>
             <div className="input-group mb-3">
@@ -73,7 +82,7 @@ const LibraryMenu: FunctionComponent = () => {
                             <td>{original}</td>
                             <td>{meaning}</td>
                             <td>
-                                <button className="btn btn-danger btn-sm"><FontAwesomeIcon icon={faTrashAlt} onClick={() => deleteWord(id)} /></button>
+                                <button className="btn btn-danger btn-sm" onClick={() => confirmDeleteWordModal(word)}><FontAwesomeIcon icon={faTrashAlt} /></button>
                                 <button className="btn btn-info btn-sm"><FontAwesomeIcon icon={faEdit} /></button>
                             </td>
                         </tr>
@@ -152,7 +161,7 @@ function NewWordModal (props: NewWordModalProps) {
         //Add id to the new word
         const generatedId: number = Math.floor(((Math.random() * 10000) + 100))
         const wordWithid: Word = {...newWord, id: generatedId}
-        props.saveWord(wordWithid)
+        props.onSubmit(wordWithid)
         onCancel()
     }
 
@@ -240,6 +249,62 @@ function NewWordModal (props: NewWordModalProps) {
             </Modal.Footer>
         </Modal>
     );
+}
+
+function ConfirmDeleteWordModal(props: DeleteWordModalProps): JSX.Element {
+    const [inputWord, setInputWord] = useState('')
+    const [isInvalid, setIsInvalid] = useState(false)
+    const {show, onHide, onSubmit, word} = props
+    
+    const onChangeInput = ({currentTarget: input}: React.ChangeEvent<HTMLInputElement>) => {
+        setInputWord(input.value)
+    }
+
+    const cleanAndHide = () => {
+        setInputWord('')
+        setIsInvalid(false)
+        onHide(false)
+    }
+
+    const validateConfirmation = () => {
+        //TODO: Validate the input to the original word
+        if(inputWord.toLowerCase() !== word.meaning.toLowerCase()) {
+            setIsInvalid(true)
+        } else {
+            setInputWord('')
+            onHide()
+            onSubmit(word.id)
+        }
+    }
+
+    return (
+        <Modal show={show} onHide={cleanAndHide}>
+            <Modal.Header closeButton>
+            <Modal.Title>Delete word</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <p>Are you sure you want to delete the word?</p>
+                <h4>{word.original} <small>({word.meaning})</small> </h4>
+                <hr/>
+                <p>If so, please enter the meaning of the word and click confirm:</p>
+                <InputGroup hasValidation>
+                    <Form.Control type="text" placeholder={`Type the word ${word.meaning}`} onChange={onChangeInput} value={inputWord} isInvalid={isInvalid}/>
+                    <Form.Control.Feedback type="invalid">
+                        The entered word is incorrect. Please retry to delete the word.
+                    </Form.Control.Feedback>
+                </InputGroup>
+            </Modal.Body>
+            <Modal.Footer>
+            <Button variant="info" onClick={cleanAndHide}>
+                Cancel
+            </Button>
+            <Button variant="danger" onClick={validateConfirmation}>
+                <FontAwesomeIcon icon={faExclamationTriangle}/>{' '}
+                Confirm
+            </Button>
+            </Modal.Footer>
+        </Modal>
+    )
 }
 
 export default LibraryMenu

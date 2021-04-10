@@ -8,9 +8,13 @@ interface Word {
 }
 
 interface NewWordModalProps extends ReactBootstrap.ModalProps {
-    saveWord: any 
+    onSubmit: any 
     onHide: any
     show: boolean
+}
+
+interface DeleteWordModalProps extends NewWordModalProps {
+    word: Word
 }
 
 interface SearchFilter {

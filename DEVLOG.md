@@ -27,3 +27,19 @@ Another day trying to fix the function to transform words to hiragana
 -   The filter works. For now only by the meaning
 -   Added a small text to show how many words are filtered
 -   When the word row is clicked, the card shows the clicked word
+
+##Day 5
+
+-   Implementation of the delete word modal
+-   To confirm the delete of a word, you need to write down the meaning
+
+##Day 6
+
+-   Creation of the practice main screen
+-   Started the guess the word menu
+
+##Day 7
+
+-   Giving functionality to the clock
+-   Change layout using Row and Col (of React Bootstrap) in PracticeWords
+-   Started the guess card
