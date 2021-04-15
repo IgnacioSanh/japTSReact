@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react'
 import Form from 'react-bootstrap/Form'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faStopwatch, faHourglass } from '@fortawesome/free-solid-svg-icons'
-import { setSyntheticLeadingComments } from 'typescript'
 
 interface TimerProps {
     started: boolean
@@ -11,19 +10,31 @@ interface TimerProps {
 const Timer = (props: TimerProps): JSX.Element => {
     
     const [useTimer, setUseTimer] = useState(false)
-    const [secs, setSecs] = useState(0)
+    const [secs, setSecs] = useState(10)
+    const [finished, setFinished] = useState(false)
 
     useEffect(() => {
-        let timer = setTimeout(() => {
-            setSecs(secs - 1)
-        }, 1000)
+        var timer: any;
 
-        if(secs === 0) clearTimeout(timer)
-    }, [secs])
+        const startTimer = (): void => {
+            timer = setTimeout(() => {
+                setSecs(secs - 1)
+            }, 1000)
+        }
 
-    useEffect(() => {
-        if(props.started === true) setSecs(60)
-    }, [props.started])
+        const stopTimer = ():void => {
+            clearTimeout(timer)
+            setFinished(true)
+        }
+        
+        if(props.started) {
+            startTimer()
+            setFinished(false)
+        }
+
+        if(secs === 0) stopTimer()
+
+    },[secs, props.started])
     
     const BeforeStart = (): JSX.Element => {
         return (

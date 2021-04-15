@@ -12,3 +12,7 @@
 .padding-all-30 {
 	padding: 30px;
 }
+
+.line-through {
+	text-decoration: line-through;
+}

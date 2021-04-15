@@ -46,3 +46,13 @@ Another day trying to fix the function to transform words to hiragana
 -   Giving functionality to the clock
 -   Change layout using Row and Col (of React Bootstrap) in PracticeWords
 -   Started the guess card
+
+## Day 8
+
+-   Trying to fix the clock when it should stop, but not working completely
+
+## Day 9
+
+-   Start developing the answers box. It connects the Question component with the new Answer components.
+-   Start the score board, but is only a dummy number.
+-   Need to set the min-length of the box and hide the answer box for xs-sm dimensions

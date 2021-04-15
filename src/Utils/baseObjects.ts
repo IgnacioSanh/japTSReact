@@ -28,6 +28,8 @@ const searchFilterBase: SearchFilter = {
     page: 1
 }
 
+const baseWordHistory: WordHistory[] = []
+
 const baseWord: Word = {
     id: 0,
     original: 'Word',
@@ -37,7 +39,7 @@ const baseWord: Word = {
     tags: []
 }
 
-const baseObjects = {mockWords, searchFilterBase, baseWord}
+const baseObjects = {mockWords, searchFilterBase, baseWord, baseWordHistory}
 
 
 export default baseObjects

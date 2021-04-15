@@ -3,16 +3,33 @@ import {Link} from 'react-router-dom'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import Navbar from 'react-bootstrap/Navbar'
-import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCheckCircle, faChevronLeft, faHandPaper, faQuestionCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons'
 import Timer from './timer'
+import Question from './Question'
+import baseObjects from '../../../Utils/baseObjects';
 import './practiceWords.css'
+import AnswerHistory from './AnswerHistory'
 
 const PracticeWords = (): JSX.Element => {
 
-    const [started, setStarted] = useState(false)
+    const [started, setStarted] = useState(true)
+    const [currentWord, setCurrentWord] = useState(baseObjects.mockWords[0])
+    const [wordsHistory, setWordsHistory] = useState(baseObjects.baseWordHistory)
+
+    const checkStarted = () => {
+        setStarted(false)
+    }
+
+    const answerTrigger = (answer: string, correct: boolean) => {
+        const newAnswer: WordHistory = {
+            word: currentWord,
+            correct: correct,
+            answer: answer,
+        }
+        setWordsHistory([newAnswer, ...wordsHistory])
+    }
 
     const StartMessage = (): JSX.Element => {
         return(
@@ -47,38 +64,19 @@ const PracticeWords = (): JSX.Element => {
                         </Col>
                         <Col xs={12} className="mt-4">
                             <div className="border-base padding-all-30">
-                                {started ? <Question /> : <StartMessage />}
+                                {started ? <Question setStarted={checkStarted} word={currentWord} answerTrigger={answerTrigger} /> : <StartMessage />}
                             </div>
                         </Col>
                     </Row>
                 </Col>
                 <Col xs={6}>
-                    <div className="border-base question-frame">
-                        <h5>Answers</h5>
-                        <hr/>
-                        <div className="max-height-20"></div>
-                    </div>
+                    <AnswerHistory wordHistory={wordsHistory}/>
                 </Col>
             </Row>
         </>
     )
 
     
-}
-
-const Question = (): JSX.Element => {
-    return(
-        <>
-            <h1 className="text-center">ありがおつ</h1>
-            <Form.Control type="text" size="lg" placeholder="Enter the meaning of the word..." />
-            <div className="mt-4 d-flex justify-content-between">
-                <Button variant="danger"><FontAwesomeIcon icon={faTimesCircle} /> Pass</Button>
-                <Button variant="warning"><FontAwesomeIcon icon={faQuestionCircle} /> Hint</Button>
-                <Button variant="success"><FontAwesomeIcon icon={faCheckCircle} /> Answer</Button>
-            </div>
-            <Button variant="primary" className="mt-4" block><FontAwesomeIcon icon={faHandPaper} /> Stop the session</Button>
-        </>
-    )
 }
     
 export default PracticeWords
