@@ -16,10 +16,28 @@ const PracticeWords = (): JSX.Element => {
 
     const [started, setStarted] = useState(true)
     const [currentWord, setCurrentWord] = useState(baseObjects.mockWords[0])
+    const [words, setWords] = useState(baseObjects.mockWords)
     const [wordsHistory, setWordsHistory] = useState(baseObjects.baseWordHistory)
 
     const checkStarted = () => {
         setStarted(false)
+    }
+
+    const getNextWord = (): void => {
+        if(words.length < 5) {
+            //TODO Fetch more words from back
+            console.log('Fetching words')
+
+            if(words.length === 0 && started) {
+                //No more words remaining in back. Stop the practice
+                setStarted(false)
+                return
+            }
+        }
+        let poppingWords = words
+        const word = poppingWords.pop()
+        setCurrentWord((word?word:baseObjects.baseWord))
+        setWords(poppingWords)
     }
 
     const answerTrigger = (answer: string, correct: boolean) => {
@@ -29,6 +47,8 @@ const PracticeWords = (): JSX.Element => {
             answer: answer,
         }
         setWordsHistory([newAnswer, ...wordsHistory])
+        //Save word to stats
+        getNextWord()
     }
 
     const StartMessage = (): JSX.Element => {

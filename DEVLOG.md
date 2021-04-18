@@ -56,3 +56,8 @@ Another day trying to fix the function to transform words to hiragana
 -   Start developing the answers box. It connects the Question component with the new Answer components.
 -   Start the score board, but is only a dummy number.
 -   Need to set the min-length of the box and hide the answer box for xs-sm dimensions
+
+## Day 10
+
+-   Get next word. The strategy will be to get more words when there less than X (TBD) words remaining
+-   Get together all the elements to start and end the practice

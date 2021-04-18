@@ -22,14 +22,14 @@ const AnswerHistory = ({wordHistory}: AnswerHistoryProps) => {
     }
 
     return (
-        <div className="border-base question-frame">
+        <div className="border-base answers-frame">
             <h5 className="text-left">Answers <small className="float-right">Score: 0/{wordHistory.length}</small></h5>
-            <div className="max-height-20">
+            <div className="answer-frame-max-height">
                 <Table className="text-left">
-                {wordHistory.map(wordHist => {
+                {wordHistory.map((wordHist, idx) => {
                     const {word, correct, answer} = wordHist
                     return (
-                        <tr>
+                        <tr key={idx}>
                             <td>{getIcon(correct)}</td>
                             <td>
                                 <span>{word.original} <FontAwesomeIcon icon={faLongArrowAltRight} /> {formatAnswer(correct, answer, word.meaning)}</span>

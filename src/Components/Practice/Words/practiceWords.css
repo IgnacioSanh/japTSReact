@@ -4,9 +4,9 @@
 	text-align: center;
 }
 
-.question-frame {
+.answers-frame {
 	padding: 20px 40px;
-	min-height: 340px;
+	height: 408px;
 }
 
 .padding-all-30 {
@@ -15,4 +15,10 @@
 
 .line-through {
 	text-decoration: line-through;
+}
+
+.answer-frame-max-height {
+	max-height: 340px;
+	overflow-y: scroll;
+	margin-top: 10px;
 }
