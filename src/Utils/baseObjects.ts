@@ -20,7 +20,7 @@ const mockWords: Word[] = [{
     meaning: 'Me',
     knowledge: 3,
     type: 'Other',
-    tags: ['greeting']
+    tags: []
 }]
 
 const baseEmptyWord: Word = {
