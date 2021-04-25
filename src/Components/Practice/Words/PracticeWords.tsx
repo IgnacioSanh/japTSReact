@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import {Link} from 'react-router-dom'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
@@ -11,26 +11,39 @@ import Question from './Question'
 import baseObjects from '../../../Utils/baseObjects';
 import './practiceWords.css'
 import AnswerHistory from './AnswerHistory'
+import { getWords } from '../../../Services/wordService'
+import constants from '../../../Configuration/constants';
 
 const PracticeWords = (): JSX.Element => {
+    const [started, setStarted] = useState<boolean>(false)
+    const [iteration, setIteration] = useState<number>(0)
+    const [currentWord, setCurrentWord] = useState<Word | undefined>(undefined)
+    const [words, setWords] = useState<Word[]>(getWords(0))
+    const [lastWordHistory, setLastWordHistory] = useState<WordHistory | undefined>(undefined)
 
-    const [started, setStarted] = useState(true)
-    const [currentWord, setCurrentWord] = useState(baseObjects.mockWords[0])
-    const [words, setWords] = useState(baseObjects.mockWords)
-    const [wordsHistory, setWordsHistory] = useState(baseObjects.baseWordHistory)
+    useEffect(() => {
+        if(!started) setLastWordHistory(undefined)
+        else if(!currentWord) getNextWord()
+
+    }, [started, currentWord])
 
     const checkStarted = () => {
         setStarted(false)
     }
 
-    const getNextWord = (): void => {
-        if(words.length < 5) {
-            //TODO Fetch more words from back
-            console.log('Fetching words')
+    const stopPractice = () => {
+        setStarted(false)
+        setIteration(0)
+        setLastWordHistory(undefined)
+    }
 
+    const getNextWord = (): void => {
+        if(words.length < constants.WORDS_BY_BATCH) {
+            setWords([...words, getWords(iteration)] as Word[])
+            setIteration(iteration + 1)
             if(words.length === 0 && started) {
                 //No more words remaining in back. Stop the practice
-                setStarted(false)
+                stopPractice()
                 return
             }
         }
@@ -46,7 +59,7 @@ const PracticeWords = (): JSX.Element => {
             correct: correct,
             answer: answer,
         }
-        setWordsHistory([newAnswer, ...wordsHistory])
+        setLastWordHistory(newAnswer)
         //Save word to stats
         getNextWord()
     }
@@ -90,7 +103,7 @@ const PracticeWords = (): JSX.Element => {
                     </Row>
                 </Col>
                 <Col xs={6}>
-                    <AnswerHistory wordHistory={wordsHistory}/>
+                    <AnswerHistory lastWord={lastWordHistory} started={started}/>
                 </Col>
             </Row>
         </>

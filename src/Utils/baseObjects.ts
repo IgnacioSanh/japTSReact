@@ -23,12 +23,27 @@ const mockWords: Word[] = [{
     tags: ['greeting']
 }]
 
+const baseEmptyWord: Word = {
+    id: 0,
+    original: '',
+    meaning: '',
+    knowledge: 1,
+    type: '',
+    tags: []
+}
+
 const searchFilterBase: SearchFilter = {
     searchText: '', 
     page: 1
 }
 
-const baseWordHistory: WordHistory[] = []
+const baseWordsHistory: WordHistory[] = []
+
+const baseWordHistory: WordHistory = {
+    word: baseEmptyWord,
+    answer: '',
+    correct: false    
+}
 
 const baseWord: Word = {
     id: 0,
@@ -39,7 +54,7 @@ const baseWord: Word = {
     tags: []
 }
 
-const baseObjects = {mockWords, searchFilterBase, baseWord, baseWordHistory}
+const baseObjects = {mockWords, searchFilterBase, baseWord, baseWordsHistory, baseWordHistory}
 
 
 export default baseObjects

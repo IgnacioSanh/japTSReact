@@ -1,9 +1,16 @@
 interface WordHistory {
-    word: Word
+    word?: Word
     correct: boolean
     answer: string
 }
 
+interface QuestionProps {
+    setStarted: any
+    word?: Word
+    answerTrigger: any
+}
+
 interface AnswerHistoryProps {
-    wordHistory: WordHistory[]
+    lastWord?: WordHistory,
+    started: boolean
 }

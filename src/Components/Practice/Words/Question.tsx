@@ -5,19 +5,13 @@ import Form from 'react-bootstrap/Form'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCheckCircle, faHandPaper, faQuestionCircle, faTimesCircle } from '@fortawesome/free-solid-svg-icons'
 
-interface QuestionProps {
-    setStarted: any
-    word: Word
-    answerTrigger: any
-}
-
 const Question = ({setStarted, word, answerTrigger}: QuestionProps): JSX.Element => {
     
     const [answer, setAnswer] = useState('')
-    const {original} = word
+    const original = word?.original
 
     const onAnswer = () => {
-        const correct = answer.toLowerCase() === word.meaning.toLowerCase()
+        const correct = answer.toLowerCase() === word?.meaning.toLowerCase()
         if(correct) {
             toast.success(`🎉 yay! that's correct!`, {
                 transition: Flip 

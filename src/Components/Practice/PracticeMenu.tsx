@@ -9,7 +9,7 @@ const PracticeMenu: FunctionComponent = () => {
         <>
             <h3>There are 4 modalities to practice</h3>
             <div className="row">
-                <div className="col-6 mt-5">
+                <div className="col-6 mt-4">
                     <Card>
                         <Card.Body>
                             <Card.Title>Words</Card.Title>
