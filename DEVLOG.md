@@ -67,3 +67,7 @@ Another day trying to fix the function to transform words to hiragana
 -   The refactor of the answerHistory component and the answer was completed.
 -   Now it shows the latest score and a table with top scorers.
 -   The Pass button and Hint button are now functional
+
+## Day 12
+
+-   Fixed the timer, but now the getWords fetching should be fixed

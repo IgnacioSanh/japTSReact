@@ -18,26 +18,28 @@ const PracticeWords = (): JSX.Element => {
     const [started, setStarted] = useState<boolean>(false)
     const [iteration, setIteration] = useState<number>(0)
     const [currentWord, setCurrentWord] = useState<Word | undefined>(undefined)
-    const [words, setWords] = useState<Word[]>(getWords(0))
+    const [words, setWords] = useState<Word[]>([])
     const [lastWordHistory, setLastWordHistory] = useState<WordHistory | undefined>(undefined)
 
     useEffect(() => {
         if(!started) setLastWordHistory(undefined)
         else if(!currentWord) getNextWord()
-
     }, [started, currentWord])
-
-    const checkStarted = () => {
-        setStarted(false)
-    }
 
     const stopPractice = () => {
         setStarted(false)
         setIteration(0)
         setLastWordHistory(undefined)
+        setCurrentWord(undefined)
+        setWords([])
     }
 
     const getNextWord = (): void => {
+        console.log('Get next Word', {
+            'iteration': iteration,
+            'started': started,
+            'words': words.length,
+        })
         if(words.length < constants.WORDS_BY_BATCH) {
             setWords([...words, getWords(iteration)] as Word[])
             setIteration(iteration + 1)
@@ -92,12 +94,12 @@ const PracticeWords = (): JSX.Element => {
                     <Row>
                         <Col xs={12}>
                             <div className="border-base padding-all-30">
-                                <Timer started={started} />
+                                <Timer started={started} stopPractice={stopPractice}/>
                             </div>
                         </Col>
                         <Col xs={12} className="mt-4">
                             <div className="border-base padding-all-30">
-                                {started ? <Question setStarted={checkStarted} word={currentWord} answerTrigger={answerTrigger} /> : <StartMessage />}
+                                {started ? <Question setStarted={stopPractice} word={currentWord} answerTrigger={answerTrigger} /> : <StartMessage />}
                             </div>
                         </Col>
                     </Row>
