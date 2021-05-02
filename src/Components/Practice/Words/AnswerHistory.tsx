@@ -71,6 +71,7 @@ const AnswerHistory = ({lastWord, started}: AnswerHistoryProps) => {
             <h5 className="text-left">Answers <small className="float-right">Score: {score}</small></h5>
             <div className="answer-frame-max-height">
                 <Table className="text-left">
+                    <tbody>
                 {wordsHistory.map((wordHistory, idx) => {
                     const {word, correct, answer} = wordHistory
                     return (
@@ -82,6 +83,7 @@ const AnswerHistory = ({lastWord, started}: AnswerHistoryProps) => {
                         </tr>
                     )
                 })}
+                </tbody>
                 </Table>
             </div>
         </div>

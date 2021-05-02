@@ -5,36 +5,37 @@ import { faStopwatch, faHourglass } from '@fortawesome/free-solid-svg-icons'
 
 interface TimerProps {
     started: boolean
+    stopPractice: any
 }
 
 const Timer = (props: TimerProps): JSX.Element => {
-    
+    const {started, stopPractice} = props;
+    const STARTING_SECS = 5
+
     const [useTimer, setUseTimer] = useState(false)
-    const [secs, setSecs] = useState(10)
-    const [finished, setFinished] = useState(false)
+    const [secs, setSecs] = useState(STARTING_SECS)
 
     useEffect(() => {
-        var timer: any;
+        let timer: any
 
-        const startTimer = (): void => {
+        const startTimer = () => {
             timer = setTimeout(() => {
                 setSecs(secs - 1)
             }, 1000)
         }
 
-        const stopTimer = ():void => {
-            clearTimeout(timer)
-            setFinished(true)
-        }
-        
-        if(props.started) {
+        if(started && !timer && useTimer) {
             startTimer()
-            setFinished(false)
         }
-
-        if(secs === 0) stopTimer()
-
-    },[secs, props.started])
+        if(useTimer && !started) {
+            setSecs(STARTING_SECS)
+            clearTimeout(timer)
+        }
+        if(secs === 0) {
+            stopPractice()
+            clearTimeout(timer)
+        }
+    },[secs, started, useTimer])
     
     const BeforeStart = (): JSX.Element => {
         return (
